@@ -1,1 +1,1 @@
-/control/loop scandet.mac sensors 10 100 10
+/control/loop scandet.mac xposition -2500 2500 50

@@ -2,48 +2,32 @@
 
 MyDetectorConstruction::MyDetectorConstruction()
 {
-  /*  nx = 2;
-    ny = 2;
-    xgap = 5;
-    ygap = 8;
-    xpitch = 25;
-    ypitch = 20;
-    */
-/*
-    /detector/nx 3
-/detector/ny 3
-/detector/xgap 3
-/detector/ygap 3
-/detector/xpitch 30
-/detector/ypitch 30
-*/
+  fMessenger = new G4GenericMessenger(this, "/detector/", "Detector Construction");
 
-    fMessenger = new G4GenericMessenger(this, "/detector/", "Detector Construction");
+  fMessenger->DeclareProperty("nx", nx, "Number of cols");
+  fMessenger->DeclareProperty("ny", ny, "Number of rows");
+  fMessenger->DeclareProperty("xgap", xgap, "xgap um");
+  fMessenger->DeclareProperty("ygap", ygap, "ygap um");
+  fMessenger->DeclareProperty("xpitch", xpitch, "xpitch um");
+  fMessenger->DeclareProperty("ypitch", ypitch, "ypitch um");
+  fMessenger->DeclareProperty("radthick", radthick, "radthick um");
+  fMessenger->DeclareProperty("DUTthick", DUTthick, "DUTthick um");
 
-    fMessenger->DeclareProperty("nx", nx, "Number of cols");
-    fMessenger->DeclareProperty("ny", ny, "Number of rows");
-    fMessenger->DeclareProperty("xgap", xgap, "xgap um");
-    fMessenger->DeclareProperty("ygap", ygap, "ygap um");
-    fMessenger->DeclareProperty("xpitch", xpitch, "xpitch um");
-    fMessenger->DeclareProperty("ypitch", ypitch, "ypitch um");
+  nx = 1;
+  ny = 1;
+  xgap = 2000;
+  ygap = 2000;
+  xpitch = 1000;
+  ypitch = 1000;
+  radthick = 1000;
+  DUTthick = 300;
 
-    nx = 2;
-    ny = 2;
-    xgap = 100;
-    ygap = 100;
-    xpitch = 1000;
-    ypitch = 1000;
-    radthick = 1000;
-    DUTthick = 50;
+  //per Silicone
+  nistMan = G4NistManager::Instance();
+  nistMan->SetVerbose(2);
+  //
 
-    //per Silicone
-    nistMan = G4NistManager::Instance();
-    nistMan->SetVerbose(2);
-    //
-
-
-
-    DefineMaterials();
+  DefineMaterials();
 
 
 }
@@ -51,8 +35,8 @@ MyDetectorConstruction::MyDetectorConstruction()
 MyDetectorConstruction::~MyDetectorConstruction()
 {}
 
-void MyDetectorConstruction::DefineMaterials()
-{
+  void MyDetectorConstruction::DefineMaterials()
+  {
     G4NistManager *nist = G4NistManager::Instance();
 
     C = nist->FindOrBuildElement("C");
@@ -119,7 +103,7 @@ void MyDetectorConstruction::DefineMaterials()
     density = 1.060*g/cm3;
 
     Silicone = nistMan->
-            ConstructNewMaterial("Silicone", elements, natoms, density);
+    ConstructNewMaterial("Silicone", elements, natoms, density);
 
     elements.clear();
     natoms.clear();
@@ -129,30 +113,30 @@ void MyDetectorConstruction::DefineMaterials()
 
     G4double PhotonEnergy[nEntries] =
     {2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV,
-     2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
-     2.30*eV,2.33*eV,2.36*eV,2.39*eV,2.42*eV,
-     2.45*eV,2.48*eV,2.51*eV,2.54*eV,2.57*eV,
-     2.60*eV,2.63*eV,2.66*eV,2.69*eV,2.72*eV,
-     2.75*eV,2.78*eV,2.81*eV,2.84*eV,2.87*eV,
-     2.90*eV,2.93*eV,2.96*eV,2.99*eV,3.02*eV,
-     3.05*eV,3.08*eV,3.11*eV,3.14*eV,3.17*eV,
-     3.20*eV,3.23*eV,3.26*eV,3.29*eV,3.32*eV,
-     3.35*eV,3.38*eV,3.41*eV,3.44*eV,3.47*eV};
+    2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
+    2.30*eV,2.33*eV,2.36*eV,2.39*eV,2.42*eV,
+    2.45*eV,2.48*eV,2.51*eV,2.54*eV,2.57*eV,
+    2.60*eV,2.63*eV,2.66*eV,2.69*eV,2.72*eV,
+    2.75*eV,2.78*eV,2.81*eV,2.84*eV,2.87*eV,
+    2.90*eV,2.93*eV,2.96*eV,2.99*eV,3.02*eV,
+    3.05*eV,3.08*eV,3.11*eV,3.14*eV,3.17*eV,
+    3.20*eV,3.23*eV,3.26*eV,3.29*eV,3.32*eV,
+    3.35*eV,3.38*eV,3.41*eV,3.44*eV,3.47*eV};
 
-     G4double AbsClad[nEntries] =
+    G4double AbsClad[nEntries] =
     {20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-     20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-     20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-     20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-     20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m};
+    20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
+    20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
+    20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
+    20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m};
 
 
-     G4double RefractiveIndexSilicone[nEntries] =
-     { 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46};
+    G4double RefractiveIndexSilicone[nEntries] =
+    { 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
+    1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
+    1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
+    1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
+    1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46};
 
     // Add entries into properties table
     G4MaterialPropertiesTable* MPTSilicone = new G4MaterialPropertiesTable();
@@ -168,29 +152,29 @@ void MyDetectorConstruction::DefineMaterials()
 
     // BGO
     G4int NUMENTRIES = 3;
-  	G4double BSO_Energy[NUMENTRIES] = {2.0*eV, 2.87*eV, 2.9*eV};
-  	BGO = new G4Material("BGO", 7.13*g/cm3, 3);
+    G4double BSO_Energy[NUMENTRIES] = {2.0*eV, 2.87*eV, 2.9*eV};
+    BGO = new G4Material("BGO", 7.13*g/cm3, 3);
     Bi = nist->FindOrBuildElement("Bi");
     Ge = nist->FindOrBuildElement("Ge");
     O = nist->FindOrBuildElement("O");
-  	BGO->AddElement(Bi, 4);
-  	BGO->AddElement(Ge, 3);
-  	BGO->AddElement(O, 12);
-  	G4double RIndexBGO[NUMENTRIES]={ 2.15, 2.15, 2.15};
-  	G4double Absorption1[NUMENTRIES]={24.*cm, 24.*cm, 24.*cm}; //http://www.sciencedirect.com/science/article/pii/0167508784900930
-  	G4double ScintilFast[NUMENTRIES]={0.00, 0.00, 1.00}; //I don't know what this is or if it is right
-  	G4MaterialPropertiesTable* MPT_BGO = new G4MaterialPropertiesTable();
-  	MPT_BGO->AddProperty("RINDEX",BSO_Energy,RIndexBGO,NUMENTRIES);
-  	MPT_BGO->AddProperty("ABSLENGTH",BSO_Energy,Absorption1,NUMENTRIES);
-  	MPT_BGO->AddProperty("FASTCOMPONENT",BSO_Energy,ScintilFast,NUMENTRIES);
-  	// 	MPT_BGO->AddProperty("SLOWCOMPONENT",BSO_Energy, ScintilFast,NUMENTRIES);
-  	MPT_BGO->AddConstProperty("SCINTILLATIONYIELD",2000./MeV);
-  	MPT_BGO->AddConstProperty("RESOLUTIONSCALE",1.0); //creates a statistcal flucution, higher values broaden it; 0 = no fluctuation
-  	MPT_BGO->AddConstProperty("FASTTIMECONSTANT", 100.*ns); //Is this right???
+    BGO->AddElement(Bi, 4);
+    BGO->AddElement(Ge, 3);
+    BGO->AddElement(O, 12);
+    G4double RIndexBGO[NUMENTRIES]={ 2.15, 2.15, 2.15};
+    G4double Absorption1[NUMENTRIES]={24.*cm, 24.*cm, 24.*cm}; //http://www.sciencedirect.com/science/article/pii/0167508784900930
+    G4double ScintilFast[NUMENTRIES]={0.00, 0.00, 1.00}; //I don't know what this is or if it is right
+    G4MaterialPropertiesTable* MPT_BGO = new G4MaterialPropertiesTable();
+    MPT_BGO->AddProperty("RINDEX",BSO_Energy,RIndexBGO,NUMENTRIES);
+    MPT_BGO->AddProperty("ABSLENGTH",BSO_Energy,Absorption1,NUMENTRIES);
+    MPT_BGO->AddProperty("FASTCOMPONENT",BSO_Energy,ScintilFast,NUMENTRIES);
+    // 	MPT_BGO->AddProperty("SLOWCOMPONENT",BSO_Energy, ScintilFast,NUMENTRIES);
+    MPT_BGO->AddConstProperty("SCINTILLATIONYIELD",2000./MeV);
+    MPT_BGO->AddConstProperty("RESOLUTIONSCALE",1.0); //creates a statistcal flucution, higher values broaden it; 0 = no fluctuation
+    MPT_BGO->AddConstProperty("FASTTIMECONSTANT", 100.*ns); //Is this right???
     // 	MPT_BGO->AddConstProperty("SLOWTIMECONSTANT", 100.*ns); // because the yield ratio is set at 1.0, there is no slow scintillation
     // 	MPT_BGO->AddConstProperty("YIELDRATIO",1.0);  // all of the scintillation is fast (fast component)
-  	BGO->SetMaterialPropertiesTable(MPT_BGO);
-  	//BGO does not have a Birks Coefficient because it is not a plastic Radiator (and thus does not have a non-linear response)
+    BGO->SetMaterialPropertiesTable(MPT_BGO);
+    //BGO does not have a Birks Coefficient because it is not a plastic Radiator (and thus does not have a non-linear response)
 
 
     //mirrorSurface
@@ -206,15 +190,15 @@ void MyDetectorConstruction::DefineMaterials()
 
 
     worldMat->SetMaterialPropertiesTable(mptWorld);
-}
+  }
 
-G4VPhysicalVolume *MyDetectorConstruction::Construct()
-{
+  G4VPhysicalVolume *MyDetectorConstruction::Construct()
+  {
     G4double xWorld = (xpitch*nx+xgap*(nx+1))*0.5*um;
     G4double yWorld = (ypitch*ny+ygap*(ny+1))*0.5*um;
     //G4double xWorld = 1*mm;
     //G4double yWorld = 1*mm;
-    G4double zWorld = 2*mm;
+    G4double zWorld = (2*radthick+DUTthick)*um;
 
     G4Colour brown(0.7, 0.4, 0.1);
     G4Colour blue(0., 0., 1.);
@@ -239,20 +223,20 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., radthick*1.5*um), logicRadiator, "physRadiator", logicWorld, false, 0, true);
 
-    solidDetector = new G4Box("solidDetector", xpitch*0.5*um, ypitch*0.5*um, DUTthick*0.05*um);
+    solidDetector = new G4Box("solidDetector", xpitch*0.5*um, ypitch*0.5*um, DUTthick*0.5*um);
 
     logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
 
     logicDetector->SetVisAttributes(brownVisAttributes);
 
-/*
+    /*
     nx = 2;
     ny = 2;
     xgap = 5;
     ygap = 8;
     xpitch = 25;
     ypitch = 20;
-*/
+    */
     std::cout<<std::endl;
     std::cout<<std::endl;
     std::cout<<std::endl;
@@ -265,28 +249,28 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4int j1 = 1;
     for(G4int i = 1; i <= nx; i++)
     {
-        for(G4int j = 1; j <= ny; j++)
-        {
-            physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, j+i*nx, true);
-            std::cout<<std::endl;
-            std::cout<<std::endl;
-            std::cout<<std::endl;
-            std::cout<<(i1*xpitch*0.5)*um + xgap*i*um<<std::endl;
-            std::cout<<std::endl;
-            std::cout<<std::endl;
-            std::cout<<std::endl;
-            j1+=2;
-        }
-        i1+=2;
-        j1=1;
+      for(G4int j = 1; j <= ny; j++)
+      {
+        physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, j+i*nx, true);
+        std::cout<<std::endl;
+        std::cout<<std::endl;
+        std::cout<<std::endl;
+        std::cout<<(i1*xpitch*0.5)*um + xgap*i*um<<std::endl;
+        std::cout<<std::endl;
+        std::cout<<std::endl;
+        std::cout<<std::endl;
+        j1+=2;
+      }
+      i1+=2;
+      j1=1;
     }
 
     return physWorld;
-}
+  }
 
-void MyDetectorConstruction::ConstructSDandField()
-{
+  void MyDetectorConstruction::ConstructSDandField()
+  {
     MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
 
     logicDetector->SetSensitiveDetector(sensDet);
-}
+  }
