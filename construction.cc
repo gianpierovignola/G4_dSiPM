@@ -2,13 +2,39 @@
 
 MyDetectorConstruction::MyDetectorConstruction()
 {
-    nCols = 32;
-    nRows = 32;
+  /*  nx = 2;
+    ny = 2;
+    xgap = 5;
+    ygap = 8;
+    xpitch = 25;
+    ypitch = 20;
+    */
+/*
+    /detector/nx 3
+/detector/ny 3
+/detector/xgap 3
+/detector/ygap 3
+/detector/xpitch 30
+/detector/ypitch 30
+*/
 
     fMessenger = new G4GenericMessenger(this, "/detector/", "Detector Construction");
 
-    fMessenger->DeclareProperty("nCols", nCols, "Number of cols");
-    fMessenger->DeclareProperty("nRows", nRows, "Number of rows");
+    fMessenger->DeclareProperty("nx", nx, "Number of cols");
+    fMessenger->DeclareProperty("ny", ny, "Number of rows");
+    fMessenger->DeclareProperty("xgap", xgap, "xgap um");
+    fMessenger->DeclareProperty("ygap", ygap, "ygap um");
+    fMessenger->DeclareProperty("xpitch", xpitch, "xpitch um");
+    fMessenger->DeclareProperty("ypitch", ypitch, "ypitch um");
+
+    nx = 2;
+    ny = 2;
+    xgap = 100;
+    ygap = 100;
+    xpitch = 1000;
+    ypitch = 1000;
+    radthick = 1000;
+    DUTthick = 50;
 
     //per Silicone
     nistMan = G4NistManager::Instance();
@@ -60,7 +86,7 @@ void MyDetectorConstruction::DefineMaterials()
 
     worldMat->SetMaterialPropertiesTable(mptWorld);
 
-    //physScintillator NaI
+    //physRadiator NaI
     Na = nist->FindOrBuildElement("Na");
     I = nist->FindOrBuildElement("I");
     NaI = new G4Material("NaI", 3.67*g/cm3, 2);
@@ -164,7 +190,7 @@ void MyDetectorConstruction::DefineMaterials()
     // 	MPT_BGO->AddConstProperty("SLOWTIMECONSTANT", 100.*ns); // because the yield ratio is set at 1.0, there is no slow scintillation
     // 	MPT_BGO->AddConstProperty("YIELDRATIO",1.0);  // all of the scintillation is fast (fast component)
   	BGO->SetMaterialPropertiesTable(MPT_BGO);
-  	//BGO does not have a Birks Coefficient because it is not a plastic scintillator (and thus does not have a non-linear response)
+  	//BGO does not have a Birks Coefficient because it is not a plastic Radiator (and thus does not have a non-linear response)
 
 
     //mirrorSurface
@@ -184,8 +210,10 @@ void MyDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
-    G4double xWorld = 0.5*cm;
-    G4double yWorld = 0.5*cm;
+    G4double xWorld = (xpitch*nx+xgap*(nx+1))*0.5*um;
+    G4double yWorld = (ypitch*ny+ygap*(ny+1))*0.5*um;
+    //G4double xWorld = 1*mm;
+    //G4double yWorld = 1*mm;
     G4double zWorld = 2*mm;
 
     G4Colour brown(0.7, 0.4, 0.1);
@@ -199,30 +227,58 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0, true);
 
-    solidScintillator = new G4Box("solidScintillator", 0.5*cm, 0.5*cm, 0.5*mm);
+    solidRadiator = new G4Box("solidRadiator", xWorld, yWorld, radthick*0.5*um);
 
-    logicScintillator = new G4LogicalVolume(solidScintillator, Silicone, "logicalScintillator");
+    logicRadiator = new G4LogicalVolume(solidRadiator, Silicone, "logicalRadiator");
 
-    logicScintillator->SetVisAttributes(blueVisAttributes);
+    logicRadiator->SetVisAttributes(blueVisAttributes);
 
     G4LogicalSkinSurface *skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface);
 
-    fScoringVolume = logicScintillator;
+    fScoringVolume = logicRadiator;
 
-    physScintillator = new G4PVPlacement(0, G4ThreeVector(0., 0., 1.4*mm), logicScintillator, "physScintillator", logicWorld, false, 0, true);
+    physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., radthick*1.5*um), logicRadiator, "physRadiator", logicWorld, false, 0, true);
 
-    solidDetector = new G4Box("solidDetector", xWorld/nRows, xWorld/nCols, 0.05*mm);
+    solidDetector = new G4Box("solidDetector", xpitch*0.5*um, ypitch*0.5*um, DUTthick*0.05*um);
 
     logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
 
     logicDetector->SetVisAttributes(brownVisAttributes);
 
-    for(G4int i = 0; i < nRows; i++)
+/*
+    nx = 2;
+    ny = 2;
+    xgap = 5;
+    ygap = 8;
+    xpitch = 25;
+    ypitch = 20;
+*/
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<nx<<" "<<ny<<" "<<xgap<<" "<<ygap<<" "<<xpitch<<" "<<ypitch<<" "<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+
+    G4int i1 = 1;
+    G4int j1 = 1;
+    for(G4int i = 1; i <= nx; i++)
     {
-        for(G4int j = 0; j < nCols; j++)
+        for(G4int j = 1; j <= ny; j++)
         {
-            physDetector = new G4PVPlacement(0, G4ThreeVector(-0.5*mm+(i+0.5)*mm/nRows, -0.5*mm+(j+0.5)*mm/nCols, 1.95*mm), logicDetector, "physDetector", logicWorld, false, j+i*nCols, true);
+            physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, j+i*nx, true);
+            std::cout<<std::endl;
+            std::cout<<std::endl;
+            std::cout<<std::endl;
+            std::cout<<(i1*xpitch*0.5)*um + xgap*i*um<<std::endl;
+            std::cout<<std::endl;
+            std::cout<<std::endl;
+            std::cout<<std::endl;
+            j1+=2;
         }
+        i1+=2;
+        j1=1;
     }
 
     return physWorld;

@@ -33,9 +33,9 @@ public:
     virtual G4VPhysicalVolume *Construct();
 
 private:
-    G4Box *solidWorld, *solidScintillator, *solidDetector;
-    G4LogicalVolume *logicWorld, *logicScintillator, *logicDetector;
-    G4VPhysicalVolume *physWorld, *physDetector, *physScintillator;
+    G4Box *solidWorld, *solidRadiator, *solidDetector;
+    G4LogicalVolume *logicWorld, *logicRadiator, *logicDetector;
+    G4VPhysicalVolume *physWorld, *physDetector, *physRadiator;
 
     G4OpticalSurface *mirrorSurface;
 
@@ -49,7 +49,7 @@ private:
 
     G4LogicalVolume *fScoringVolume;
 
-    G4int nRows, nCols;
+    G4int nx, ny, xgap, ygap, xpitch, ypitch, radthick, DUTthick;
 
     //per Silicone
     G4NistManager*     nistMan;

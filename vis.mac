@@ -8,3 +8,10 @@
 /vis/scene/add/axes
 /vis/scene/add/eventID
 /vis/scene/endOfEventAction accumulate
+/detector/nx 2
+/detector/ny 3
+/detector/xgap 100
+/detector/ygap 100
+/detector/xpitch 1000
+/detector/ypitch 1000
+/run/reinitializeGeometry
