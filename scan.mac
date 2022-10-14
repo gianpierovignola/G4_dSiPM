@@ -1,0 +1,6 @@
+/run/initialize
+/run/fname test
+/run/fxpos 0
+/run/fypos 0
+/gun/position 0 0 0 um
+/run/beamOn 1000

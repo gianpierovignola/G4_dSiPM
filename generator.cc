@@ -25,4 +25,13 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
     fParticleGun->GeneratePrimaryVertex(anEvent);
+    /*
+    G4double gunx = fParticleGun->GetParticlePosition().x();
+    G4double guny = fParticleGun->GetParticlePosition().y();
+    G4AnalysisManager *man = G4AnalysisManager::Instance();
+
+    man->FillNtupleDColumn(1, 4, gunx);
+    man->FillNtupleDColumn(1, 5, guny);
+    man->AddNtupleRow(1);
+    */
 }
