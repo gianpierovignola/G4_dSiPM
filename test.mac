@@ -9,7 +9,7 @@
 /vis/scene/add/eventID
 /vis/scene/endOfEventAction accumulate
 /detector/nx 50
-/detector/ny 50
+/detector/ny 40
 /detector/xgap 100
 /detector/ygap 100
 /detector/xpitch 1000
