@@ -200,15 +200,69 @@ MyDetectorConstruction::~MyDetectorConstruction()
     MPTSiliconResin->AddProperty("ABSLENGTH",PhotonEnergySiliconResin,AbsClad_SiliconResin,nEntries_SiliconResin);
     SiliconResin->SetMaterialPropertiesTable(MPTSiliconResin);
 
-    //worldMat
-    worldMat = nist->FindOrBuildMaterial("G4_AIR");
-    G4double energyWorld[2] = {1.239841939*eV/0.2, 1.239841939*eV/0.9};
-    G4double rindexWorld[2] = {1.0, 1.0};
-    G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
-    mptWorld->AddProperty("RINDEX", energyWorld, rindexWorld, 2);
-    worldMat->SetMaterialPropertiesTable(mptWorld);
 
-    //mirrorSurface
+
+    //Epoxy common
+    const G4int nEntries_EpoxyResin = 2;
+    G4double PhotonEnergyEpoxyResin[nEntries_EpoxyResin] = {1.239841939*eV/0.2, 1.239841939*eV/0.9};
+    G4double RefractiveIndexEpoxyResin[nEntries_EpoxyResin] = {1.53, 1.53};
+    G4MaterialPropertiesTable* MPTEpoxyResin = new G4MaterialPropertiesTable();
+    MPTEpoxyResin->AddProperty("RINDEX",PhotonEnergyEpoxyResin,RefractiveIndexEpoxyResin,nEntries_EpoxyResin);
+
+    //Epoxy0
+    Epoxy0 = new G4Material (" Epoxy ", 2*g/cm3 , 4);
+    Epoxy0 -> AddElement ( C , 12);
+    Epoxy0 -> AddElement ( H , 14);
+    Epoxy0 -> AddElement ( O , 2);
+    Epoxy0 -> AddElement ( N , 4);
+    Epoxy0 -> SetMaterialPropertiesTable(MPTEpoxyResin);
+
+    //Epoxy1
+    Epoxy1 = new G4Material (" Epoxy ", 1*g/cm3 , 4);
+    Epoxy1 -> AddElement ( C , 12);
+    Epoxy1 -> AddElement ( H , 14);
+    Epoxy1 -> AddElement ( O , 2);
+    Epoxy1 -> AddElement ( N , 4);
+    Epoxy1 -> SetMaterialPropertiesTable(MPTEpoxyResin);
+
+    //Epoxy2
+    Epoxy2 =	new G4Material("Epoxy",	1.2*g/cm3,	4);
+    Epoxy2->AddElement(C , 27);
+    Epoxy2->AddElement(H , 32);
+    Epoxy2->AddElement(O , 4);
+    Epoxy2->AddElement(N , 2);
+    Epoxy2 -> SetMaterialPropertiesTable(MPTEpoxyResin);
+
+    //Epoxy3
+    //The main component of epoxy resin commonly used to insulate magnet coils.
+    G4int natoms;
+    G4Material *tmpMaterial = new G4Material("aralditef",1.175*g/cm3, 3, kStateSolid);
+    tmpMaterial->AddElement(C, 12);
+    tmpMaterial->AddElement(H, 18);
+    tmpMaterial->AddElement(O, 4);
+    //A hardener for the epoxy resin
+    G4Material *tmpMaterial1 = new G4Material("hy906", 1.225*g/cm3, 3, kStateSolid);
+    tmpMaterial1->AddElement(C, 10);
+    tmpMaterial1->AddElement(H, 5);
+    tmpMaterial1->AddElement(O, 3);
+    //An accelerator for epoxy resin
+    G4Material *tmpMaterial2 = new G4Material("dy061", 1.025*g/cm3, 4, kStateSolid);
+    tmpMaterial2->AddElement(C, 15);
+    tmpMaterial2->AddElement(H, 25 );
+    tmpMaterial2->AddElement(O, 1 );
+    tmpMaterial2->AddElement(N, 3 );
+    //Material type 3 from CERN 81-05, "The Selection and Properties of Epoxide Resins Used for the Insulation of Magnet Systems in Radiation Environments".
+    Epoxy3 = new G4Material("epoxyresin3", 1.20*g/cm3, 3, kStateSolid);
+    Epoxy3->AddMaterial(tmpMaterial,49.7512*perCent);
+    Epoxy3->AddMaterial(tmpMaterial1,49.7512*perCent);
+    Epoxy3->AddMaterial(tmpMaterial2,00.4976*perCent);
+    Epoxy3 -> SetMaterialPropertiesTable(MPTEpoxyResin);
+
+
+
+
+
+//mirrorSurface
     mirrorSurface = new G4OpticalSurface("mirrorSurface");
     G4double energy_mirror[2] = {1.239841939*eV/0.2, 1.239841939*eV/0.9}; // TO EXTEND
     G4double reflectivity_mirror[2] = {0.1, 0.1};
@@ -228,12 +282,12 @@ MyDetectorConstruction::~MyDetectorConstruction()
     G4double yWorld = (ypitch*ny+ygap*(ny+1))*0.5*um;
     G4double zWorld = (2*radthick+DUTthick)*um;
     solidWorld = new G4Box("solidWorld", xWorld, yWorld, zWorld);
-    logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
+    logicWorld = new G4LogicalVolume(solidWorld, Air, "logicWorld");
     physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0, true);
 
     //Construct Radiator
     solidRadiator = new G4Box("solidRadiator", xWorld, yWorld, radthick*0.5*um);
-    logicRadiator = new G4LogicalVolume(solidRadiator, SiliconResin, "logicalRadiator");
+    logicRadiator = new G4LogicalVolume(solidRadiator, Epoxy0, "logicalRadiator");
     G4Colour blue(0., 0., 1.);
     G4VisAttributes* blueVisAttributes = new G4VisAttributes(blue);
     logicRadiator->SetVisAttributes(blueVisAttributes);
@@ -243,7 +297,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //Contruct Detector
     solidDetector = new G4Box("solidDetector", xpitch*0.5*um, ypitch*0.5*um, DUTthick*0.5*um);
-    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
+    logicDetector = new G4LogicalVolume(solidDetector, Air, "logicDetector");
     G4Colour brown(0.7, 0.4, 0.1);
     G4VisAttributes* brownVisAttributes = new G4VisAttributes(brown);
     logicDetector->SetVisAttributes(brownVisAttributes);
