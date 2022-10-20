@@ -194,13 +194,10 @@ MyDetectorConstruction::~MyDetectorConstruction()
     const G4int nEntries_SiliconResin = 2;
     G4double PhotonEnergySiliconResin[nEntries_SiliconResin] = {1.239841939*eV/0.2, 1.239841939*eV/0.9};
     G4double RefractiveIndexSiliconResin[nEntries_SiliconResin] = {1.46, 1.46};
-    //const G4int nEntries_SiliconResin = 50;
-    //G4double PhotonEnergySiliconResin[nEntries_SiliconResin]={ 2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV, 2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV, 2.30*eV,2.33*eV,2.36*eV,2.39*eV,2.42*eV, 2.45*eV,2.48*eV,2.51*eV,2.54*eV,2.57*eV, 2.60*eV,2.63*eV,2.66*eV,2.69*eV,2.72*eV, 2.75*eV,2.78*eV,2.81*eV,2.84*eV,2.87*eV, 2.90*eV,2.93*eV,2.96*eV,2.99*eV,3.02*eV, 3.05*eV,3.08*eV,3.11*eV,3.14*eV,3.17*eV, 3.20*eV,3.23*eV,3.26*eV,3.29*eV,3.32*eV, 3.35*eV,3.38*eV,3.41*eV,3.44*eV,3.47*eV };
-    //G4double AbsClad_SiliconResin[nEntries_SiliconResin]={ 20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m, 20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m, 20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m, 20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m, 20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m };
-    //G4double RefractiveIndexSiliconResin[nEntries_SiliconResin] ={ 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46};
+    G4double AbsClad_SiliconResin[nEntries_SiliconResin]={ 20.0*m,20.0*m };
     G4MaterialPropertiesTable* MPTSiliconResin = new G4MaterialPropertiesTable();
     MPTSiliconResin->AddProperty("RINDEX",PhotonEnergySiliconResin,RefractiveIndexSiliconResin,nEntries_SiliconResin);
-    //MPTSiliconResin->AddProperty("ABSLENGTH",PhotonEnergy,AbsClad_SiliconResin,nEntries_SiliconResin);
+    MPTSiliconResin->AddProperty("ABSLENGTH",PhotonEnergySiliconResin,AbsClad_SiliconResin,nEntries_SiliconResin);
     SiliconResin->SetMaterialPropertiesTable(MPTSiliconResin);
 
     //worldMat
@@ -212,8 +209,16 @@ MyDetectorConstruction::~MyDetectorConstruction()
     worldMat->SetMaterialPropertiesTable(mptWorld);
 
     //mirrorSurface
-
-
+    mirrorSurface = new G4OpticalSurface("mirrorSurface");
+    G4double energy_mirror[2] = {1.239841939*eV/0.2, 1.239841939*eV/0.9}; // TO EXTEND
+    G4double reflectivity_mirror[2] = {0.1, 0.1};
+    G4MaterialPropertiesTable *mptMirror = new G4MaterialPropertiesTable();
+    mptMirror->AddProperty("REFLECTIVITY", energy_mirror, reflectivity_mirror, 2);
+    mirrorSurface->SetMaterialPropertiesTable(mptMirror);
+    mirrorSurface->SetType(dielectric_metal);
+    mirrorSurface->SetFinish(ground);
+    mirrorSurface->SetModel(unified);
+    
   }
 
   G4VPhysicalVolume *MyDetectorConstruction::Construct()
@@ -239,7 +244,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
           logicRadiator->SetVisAttributes(blueVisAttributes);
 
-          //G4LogicalSkinSurface *skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface);
+          G4LogicalSkinSurface *skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface);
 
           fScoringVolume = logicRadiator;
 
