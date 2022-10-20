@@ -218,7 +218,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     mirrorSurface->SetType(dielectric_metal);
     mirrorSurface->SetFinish(ground);
     mirrorSurface->SetModel(unified);
-    
+
   }
 
   G4VPhysicalVolume *MyDetectorConstruction::Construct()

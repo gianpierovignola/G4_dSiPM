@@ -20,7 +20,6 @@
 #include "G4LogicalSkinSurface.hh"
 
 #include "detector.hh"
-#include "MyMaterials.hh"
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {
