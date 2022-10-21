@@ -1,5 +1,5 @@
 /run/initialize
-/run/fname test
+/run/fname ../Output/2DTest
 /run/fxpos 0
 /run/fypos 0
 /gun/position 0 0 0 um

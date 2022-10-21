@@ -13,10 +13,10 @@ MyDetectorConstruction::MyDetectorConstruction()
   fMessenger->DeclareProperty("radthick", radthick, "radthick um");
   fMessenger->DeclareProperty("DUTthick", DUTthick, "DUTthick um");
 
-  nx = 1;
-  ny = 1;
-  xgap = 2000;
-  ygap = 2000;
+  nx = 3;
+  ny = 3;
+  xgap = 200;
+  ygap = 200;
   xpitch = 1000;
   ypitch = 1000;
   radthick = 1000;
@@ -235,7 +235,6 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //Epoxy3
     //The main component of epoxy resin commonly used to insulate magnet coils.
-    G4int natoms;
     G4Material *tmpMaterial = new G4Material("aralditef",1.175*g/cm3, 3, kStateSolid);
     tmpMaterial->AddElement(C, 12);
     tmpMaterial->AddElement(H, 18);
@@ -257,10 +256,6 @@ MyDetectorConstruction::~MyDetectorConstruction()
     Epoxy3->AddMaterial(tmpMaterial1,49.7512*perCent);
     Epoxy3->AddMaterial(tmpMaterial2,00.4976*perCent);
     Epoxy3 -> SetMaterialPropertiesTable(MPTEpoxyResin);
-
-
-
-
 
 //mirrorSurface
     mirrorSurface = new G4OpticalSurface("mirrorSurface");
@@ -287,7 +282,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //Construct Radiator
     solidRadiator = new G4Box("solidRadiator", xWorld, yWorld, radthick*0.5*um);
-    logicRadiator = new G4LogicalVolume(solidRadiator, Epoxy0, "logicalRadiator");
+    logicRadiator = new G4LogicalVolume(solidRadiator, Epoxy2, "logicalRadiator");
     G4Colour blue(0., 0., 1.);
     G4VisAttributes* blueVisAttributes = new G4VisAttributes(blue);
     logicRadiator->SetVisAttributes(blueVisAttributes);

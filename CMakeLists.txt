@@ -22,4 +22,10 @@ file(GLOB DATA_FILES
 )
 file(COPY ${DATA_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 
+file(GLOB SRC_FILES
+  "*.sh"
+)
+file(COPY ${SRC_FILES} DESTINATION ${PROJECT_BINARY_DIR})
+
+
 add_custom_target(Simulation DEPENDS sim)

@@ -1,12 +1,12 @@
 #!/bin/bash
 file_name="scan.mac"
-run_name="Output/first_scan"
-min_x=-2500
-min_y=-2500
-max_x=2500
-max_y=2500
-step_x=500
-step_y=500
+run_name="../Output/2D_Test/2DTest"
+min_x=-1900
+min_y=-1900
+max_x=1900
+max_y=1900
+step_x=50
+step_y=50
 
 for(( i = $min_x; i <= $max_x; i+= $step_x))
 do
