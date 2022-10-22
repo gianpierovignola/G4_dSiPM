@@ -15,8 +15,8 @@ MyDetectorConstruction::MyDetectorConstruction()
 
   nx = 3;
   ny = 3;
-  xgap = 200;
-  ygap = 200;
+  xgap = 100;
+  ygap = 100;
   xpitch = 1000;
   ypitch = 1000;
   radthick = 1000;
