@@ -40,7 +40,7 @@ private:
 
     G4LogicalSkinSurface *skin;
 
-    G4Material *Air , *H2O, *SiO2, *Aerogel, *NaI, *LYSO, *BGO, *SiliconResin,*Epoxy0, *Epoxy1, *Epoxy2, *Epoxy3;
+    G4Material *Air , *H2O, *SiO2, *Aerogel, *NaI, *LYSO, *BGO, *SiliconResin,*Epoxy0, *Epoxy1, *Epoxy2, *Epoxy3, *BC408;
     G4Element *H, *C, *O, *N, *Na, *I, *Bi, *Si, *Ge, *Lu;
 
     void DefineMaterials();

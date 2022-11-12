@@ -13,12 +13,12 @@ MyDetectorConstruction::MyDetectorConstruction()
   fMessenger->DeclareProperty("radthick", radthick, "radthick um");
   fMessenger->DeclareProperty("DUTthick", DUTthick, "DUTthick um");
 
-  nx = 3;
-  ny = 3;
-  xgap = 100;
-  ygap = 100;
-  xpitch = 1000;
-  ypitch = 1000;
+  nx = 32;
+  ny = 32;
+  xgap = 0;
+  ygap = 0;
+  xpitch = 70;
+  ypitch = 76;
   radthick = 1000;
   DUTthick = 300;
 
@@ -161,7 +161,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     mt_LYSO->AddProperty ("RINDEX",        RIND_Energy_LYSO, RIND_INDEX_LYSO,     NUMENTRIES_2_LYSO);
     mt_LYSO->AddProperty ("ABSLENGTH",     ABS_Energy_LYSO,  ABS_LENGTH_LYSO,     NUMENTRIES_3_LYSO);
     //mt->AddProperty("RAYLEIGH",      ABS_Energy,  Rayleigh,     NUMENTRIES_2);
-    mt_LYSO->AddConstProperty ("SCINTILLATIONYIELD", 40000. / MeV);
+    mt_LYSO->AddConstProperty ("SCINTILLATIONYIELD", 33200. / MeV);
     mt_LYSO->AddConstProperty ("RESOLUTIONSCALE", 3.4);
     mt_LYSO->AddConstProperty ("FASTTIMECONSTANT", 40.*ns);
     mt_LYSO->AddConstProperty ("YIELDRATIO", 1.0);
@@ -170,7 +170,8 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //BGO
     const G4int NUMENTRIES_BGO = 3;
-    G4double BSO_Energy[NUMENTRIES_BGO] = {2.0*eV, 2.87*eV, 2.9*eV};
+    //G4double BSO_Energy[NUMENTRIES_BGO] = {2.0*eV, 2.87*eV, 2.9*eV};
+    G4double BSO_Energy[NUMENTRIES_BGO] = { 1.0 * eV, 1.84 * eV, 4.08 * eV };
     BGO = new G4Material("BGO", 7.13*g/cm3, 3);
     BGO->AddElement(Bi, 4);
     BGO->AddElement(Ge, 3);
@@ -187,6 +188,29 @@ MyDetectorConstruction::~MyDetectorConstruction()
     MPT_BGO->AddConstProperty("FASTTIMECONSTANT", 100.*ns);
     BGO->SetMaterialPropertiesTable(MPT_BGO);
 
+    //BC408
+    BC408 = new G4Material("BC408", 1.032*g/cm3, 2);
+    BC408->AddElement(H, 521);
+    BC408->AddElement(C, 474);
+
+    const G4int nEntries2= 35;
+    G4double PhotonEnergy2[nEntries2]= { 3.55, 3.47, 3.393, 3.315, 3.256, 3.195, 3.141, 3.103, 3.077, 3.056, 3.031, 3.011, 2.997, 2.983, 2.965, 2.956, 2.939, 2.921, 2.906, 2.890, 2.867, 2.852, 2.834, 2.83, 2.81, 2.796, 2.766, 2.72, 2.686, 2.653, 2.60, 2.55, 2.49, 2.38, 2.25  };
+    G4double RINDEX_BC408[nEntries2] ={ 1.58, 1.58, 1.58, 1.58, 1.58,1.58, 1.58, 1.58, 1.58, 1.58,1.58, 1.58,1.58,1.58,1.58, 1.58, 1.58, 1.58, 1.58, 1.58,1.58, 1.58, 1.58, 1.58, 1.58,1.58, 1.58,1.58,1.58,1.58,1.58,1.58,1.58,1.58,1.58 };
+    G4double ABSORPTION_BC408[nEntries2] ={ 210*cm, 210*cm, 210*cm, 210*cm, 210*cm,210*cm, 210*cm, 210*cm, 210*cm, 210*cm,210*cm, 210*cm , 210*cm, 210*cm , 210*cm ,210*cm, 210*cm, 210*cm, 210*cm, 210*cm,210*cm, 210*cm, 210*cm, 210*cm, 210*cm, 210*cm, 210*cm , 210*cm, 210*cm , 210*cm, 210*cm, 210*cm , 210*cm, 210*cm , 210*cm };
+    G4double SCINTILLATION_BC408[nEntries2] = {0,0.017,0.03,0.049,0.071,0.101,0.152,0.220,0.288,0.374,0.478,0.585,0.668,0.735,0.804,0.846,0.897,0.947,0.984, 1.0, 0.981,0.945, 0.877,0.796,0.698,0.614,0.534,0.451,0.366,0.278,0.191, 0.133, 0.076,0.025,0};
+
+    G4MaterialPropertiesTable *BC408_mt = new G4MaterialPropertiesTable();
+    BC408_mt->AddProperty("RINDEX", PhotonEnergy2, RINDEX_BC408, nEntries2);
+    BC408_mt->AddProperty("ABSLENGTH", PhotonEnergy2, ABSORPTION_BC408, nEntries2);
+    BC408_mt->AddProperty("FASTCOMPONENT", PhotonEnergy2, SCINTILLATION_BC408,nEntries2);
+    BC408_mt->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
+    BC408_mt->AddConstProperty("RESOLUTIONSCALE",1.0);
+    BC408_mt->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
+    BC408_mt->AddConstProperty("YIELDRATIO",1.);
+    // what about alpha quenching factor?
+    BC408->GetIonisation()->SetBirksConstant(0.126*mm/MeV);
+
+    BC408->SetMaterialPropertiesTable(BC408_mt);
     //SiliconResin
     SiliconResin = new G4Material ("SiliconResin", 1.060*g/cm3, 2);
     SiliconResin->AddElement (C, 2);
@@ -275,6 +299,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     //Construct World
     G4double xWorld = (xpitch*nx+xgap*(nx+1))*0.5*um;
     G4double yWorld = (ypitch*ny+ygap*(ny+1))*0.5*um;
+    std::cout<<std::endl<<std::endl<<std::endl<<"x "<<xWorld<<" y "<<yWorld<<std::endl<<std::endl<<std::endl;
     G4double zWorld = (2*radthick+DUTthick)*um;
     solidWorld = new G4Box("solidWorld", xWorld, yWorld, zWorld);
     logicWorld = new G4LogicalVolume(solidWorld, Air, "logicWorld");
@@ -282,7 +307,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //Construct Radiator
     solidRadiator = new G4Box("solidRadiator", xWorld, yWorld, radthick*0.5*um);
-    logicRadiator = new G4LogicalVolume(solidRadiator, Epoxy2, "logicalRadiator");
+    logicRadiator = new G4LogicalVolume(solidRadiator, BC408, "logicalRadiator");
     G4Colour blue(0., 0., 1.);
     G4VisAttributes* blueVisAttributes = new G4VisAttributes(blue);
     logicRadiator->SetVisAttributes(blueVisAttributes);
