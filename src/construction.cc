@@ -19,7 +19,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   ygap = 0;
   xpitch = 70;
   ypitch = 76;
-  radthick = 1000;
+  radthick = 200;
   DUTthick = 300;
 
   //per Silicone
@@ -189,6 +189,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     BGO->SetMaterialPropertiesTable(MPT_BGO);
 
     //BC408
+    /*
     BC408 = new G4Material("BC408", 1.032*g/cm3, 2);
     BC408->AddElement(H, 521);
     BC408->AddElement(C, 474);
@@ -211,6 +212,56 @@ MyDetectorConstruction::~MyDetectorConstruction()
     BC408->GetIonisation()->SetBirksConstant(0.126*mm/MeV);
 
     BC408->SetMaterialPropertiesTable(BC408_mt);
+    */
+
+    //
+    BC408 = new G4Material("BC408", 1.032*g/cm3, 2);
+    BC408->AddElement(H, 521);
+    BC408->AddElement(C, 474);
+    // Emission spectrum from BC408 literature
+    //
+    const G4int PVTScint_NumEmissEntries = 30;
+    G4double PVT_BC408_Emission_Energy[PVTScint_NumEmissEntries] = {
+    2.3864*eV, 2.4819*eV, 2.5222*eV, 2.5853*eV, 2.6016*eV, 2.6403*eV,
+    2.6516*eV, 2.6919*eV, 2.6977*eV,2.7394*eV, 2.7886*eV, 2.8076*eV,
+    2.8203*eV, 2.8332*eV, 2.8593*eV, 2.8726*eV, 2.8859*eV, 2.9062*eV,
+    2.9406*eV, 2.9546*eV, 2.9617*eV, 2.9759*eV, 3.0047*eV, 3.0267*eV,
+    3.049*eV, 3.0793*eV, 3.1024*eV, 3.1983*eV, 3.2656*eV, 3.4471*eV};
+    G4double PVT_BC408_Emission_Intensity[PVTScint_NumEmissEntries]={
+    0.02, 0.07, 0.1, 0.17, 0.2, 0.25, 0.3, 0.4, 0.42,
+    0.5, 0.6, 0.7, 0.85, 0.9, 0.97, 0.98, 0.995, 0.98,
+    0.9, 0.85, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2,
+    0.1, 0.07, 0.04};
+    // Identify how many energy divisions you want to use to
+    // describe the light output from the scintillator
+    const G4int PVTScint_NumEntries = 4;
+    G4double PVTScintPhot_Energy[] = {2.00*eV,2.87*eV,2.90*eV,3.47*eV};
+    G4double RIndexPVT[PVTScint_NumEntries]={ 1.58, 1.58, 1.58, 1.58};
+    G4double AbsorptionPVT[PVTScint_NumEntries]=
+    {210.*cm, 210.*cm, 210.*cm, 210.*cm};
+    //G4double ScintilFastPVT[PVTScint_NumEntries]={1.00, 1.00, 1.00, 1.00};
+    //G4double ScintilSlowPVT[PVTScint_NumEntries]={0.00, 0.00, 1.00, 1.00};
+    G4MaterialPropertiesTable* PVTscintillator_mt = new
+    G4MaterialPropertiesTable();
+    PVTscintillator_mt->AddProperty("RINDEX",PVTScintPhot_Energy, RIndexPVT,
+    PVTScint_NumEntries);
+    PVTscintillator_mt->AddProperty("ABSLENGTH",PVTScintPhot_Energy,
+    AbsorptionPVT, PVTScint_NumEntries);
+    PVTscintillator_mt->AddProperty("FASTCOMPONENT",PVT_BC408_Emission_Energy,
+    PVT_BC408_Emission_Intensity, PVTScint_NumEmissEntries);
+    PVTscintillator_mt->AddProperty("SLOWCOMPONENT",PVT_BC408_Emission_Energy,
+    PVT_BC408_Emission_Intensity, PVTScint_NumEmissEntries);
+    PVTscintillator_mt->AddProperty("WLSCOMPONENT",PVT_BC408_Emission_Energy,
+    PVT_BC408_Emission_Intensity,PVTScint_NumEmissEntries);
+    PVTscintillator_mt->AddConstProperty("WLSTIMECONSTANT", 0.5*ns);
+    PVTscintillator_mt->AddConstProperty("SCINTILLATIONYIELD",10.57/keV);
+    PVTscintillator_mt->AddConstProperty("RESOLUTIONSCALE",2.0);
+    PVTscintillator_mt->AddConstProperty("FASTTIMECONSTANT", 2.1*ns);
+    PVTscintillator_mt->AddConstProperty("SLOWTIMECONSTANT",10.*ns);
+    PVTscintillator_mt->AddConstProperty("YIELDRATIO",0.8);
+
+    BC408->SetMaterialPropertiesTable(PVTscintillator_mt);
+
     //SiliconResin
     SiliconResin = new G4Material ("SiliconResin", 1.060*g/cm3, 2);
     SiliconResin->AddElement (C, 2);
@@ -307,7 +358,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
     //Construct Radiator
     solidRadiator = new G4Box("solidRadiator", xWorld, yWorld, radthick*0.5*um);
-    logicRadiator = new G4LogicalVolume(solidRadiator, BC408, "logicalRadiator");
+    logicRadiator = new G4LogicalVolume(solidRadiator, LYSO, "logicalRadiator");
     G4Colour blue(0., 0., 1.);
     G4VisAttributes* blueVisAttributes = new G4VisAttributes(blue);
     logicRadiator->SetVisAttributes(blueVisAttributes);

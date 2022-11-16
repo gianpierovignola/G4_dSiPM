@@ -29,8 +29,10 @@ void plot(const char* FileName = "", int ev = 1){
 	TFile *output_f= new TFile(Form("analysis_EV%i_%s",ev,FileName),"RECREATE");
 	TFile *input_f= new TFile(FileName,"READ");
 
-	TH2I* Generated=new TH2I("Generated", "Generated;x(mm);y(mm)",32,-0.5,31.5,32,-0.5,31.5);
-	TH2I* Detected=new TH2I("Detected", "Detected;x(mm);y(mm)",32,-0.5,31.5,32,-0.5,31.5);
+	TH2I* Generated=new TH2I("Generated", "Generated;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
+	TH2I* Detected=new TH2I("Detected", "Detected;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
+	TH2I* GeneratedBin=new TH2I("GeneratedBin", "GeneratedBin;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
+	TH2I* DetectedBin=new TH2I("DetectedBin", "DetectedBin;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
 
   TTree *T = (TTree*)input_f->Get("Photons");
 	T->Draw("fX:fY>>Generated","fEvent==1","");
@@ -91,15 +93,29 @@ void plot(const char* FileName = "", int ev = 1){
 			//cout<<i<<" "<<j<<" "<<HitMap[i][j]<<endl;
 			Generated->SetBinContent(i+1, j+1, Ph[i][j]);
 			Detected->SetBinContent(i+1, j+1, HitMap[i][j]);
+			if(Ph[i][j]>0){GeneratedBin->SetBinContent(i+1, j+1, 1);}
+			if(HitMap[i][j]>0){DetectedBin->SetBinContent(i+1, j+1, 1);}
 		}
 	}
   Generated->ResetStats();
 	Detected->ResetStats();
+	GeneratedBin->ResetStats();
+	DetectedBin->ResetStats();
+	TH1D * HitX = DetectedBin->ProjectionX();
+  TH1D * HitY = DetectedBin->ProjectionY();
+	TF1 *f1 = new TF1("f1","gaus",0,32);
+	f1->SetParLimits(1,0,32);
+	HitX-> Fit("f1");
+	HitY-> Fit("f1");
 
 
   output_f->cd();
 	Generated->Write("Generated");
   Detected->Write("Detected");
+	GeneratedBin->Write("GeneratedBin");
+  DetectedBin->Write("DetectedBin");
+	HitX->Write("HitX");
+  HitY->Write("HitY");
 	input_f->Close();
 	output_f->Close();
   gROOT->SetBatch(kFALSE);

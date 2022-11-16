@@ -9,6 +9,11 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     G4ParticleDefinition *particle = particleTable->FindParticle("e-");
 
     G4ThreeVector pos(0.,0.,0.);
+
+    //G4ThreeVector pos(0.5*mm,0.5*mm,0.);
+
+    //G4ThreeVector pos(1.10*mm,1.2*mm,0.);
+
     G4ThreeVector mom(0.,0.,1.);
 
     fParticleGun->SetParticlePosition(pos);
