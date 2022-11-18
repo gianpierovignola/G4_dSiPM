@@ -7,6 +7,13 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName="e-";
     G4ParticleDefinition *particle = particleTable->FindParticle("e-");
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<G4UniformRand()<<G4UniformRand()<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
 
     G4ThreeVector pos(0.,0.,0.);
 
@@ -29,14 +36,16 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
+    G4double tempX = G4UniformRand()*2.240 - 1.120;
+    G4double tempY = G4UniformRand()*2.432 - 1.216;
+    G4ThreeVector temppos(tempX*mm,tempY*mm,0.);
+    fParticleGun->SetParticlePosition(temppos);
     fParticleGun->GeneratePrimaryVertex(anEvent);
-    /*
-    G4double gunx = fParticleGun->GetParticlePosition().x();
-    G4double guny = fParticleGun->GetParticlePosition().y();
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
 
-    man->FillNtupleDColumn(1, 4, gunx);
-    man->FillNtupleDColumn(1, 5, guny);
-    man->AddNtupleRow(1);
-    */
+    G4AnalysisManager *man = G4AnalysisManager::Instance();
+    man->FillNtupleDColumn(3, 0, tempX);
+    man->FillNtupleDColumn(3, 1, tempY);
+    man->AddNtupleRow(3);
+
+
 }

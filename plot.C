@@ -29,15 +29,15 @@ void plot(const char* FileName = "", int ev = 1){
 	TFile *output_f= new TFile(Form("analysis_EV%i_%s",ev,FileName),"RECREATE");
 	TFile *input_f= new TFile(FileName,"READ");
 
-	TH2I* Generated=new TH2I("Generated", "Generated;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
-	TH2I* Detected=new TH2I("Detected", "Detected;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
-	TH2I* GeneratedBin=new TH2I("GeneratedBin", "GeneratedBin;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
-	TH2I* DetectedBin=new TH2I("DetectedBin", "DetectedBin;x(pix);y(pix)",32,-0.5,31.5,32,-0.5,31.5);
+	TH2I* Generated=new TH2I("Generated", "Generated;x(mm);y(mm)",32,-1.155,1.155,32,-1.254,1.254);
+	TH2I* Detected=new TH2I("Detected", "Detected;x(mm);y(mm)",32,-1.155,1.155,32,-1.254,1.254);
+	TH2I* GeneratedBin=new TH2I("GeneratedBin", "GeneratedBin;x(mm);y(mm)",32,-1.155,1.155,32,-1.254,1.254);
+	TH2I* DetectedBin=new TH2I("DetectedBin", "DetectedBin;x(mm);y(mm)",32,-1.155,1.155,32,-1.254,1.254);
 
   TTree *T = (TTree*)input_f->Get("Photons");
-	T->Draw("fX:fY>>Generated","fEvent==1","");
-  T->Draw("fX>>Generatedx","fEvent==1","");
-	T->Draw("fY>>Generatedy","fEvent==1","");
+	T->Draw("fX:fY>>Generated",Form("fEvent==%i",ev),"");
+  T->Draw("fX>>Generatedx",Form("fEvent==%i",ev),"");
+	T->Draw("fY>>Generatedy",Form("fEvent==%i",ev),"");
 
 	T->SetBranchAddress("fEvent",&tempfEvent);
 	T->SetBranchAddress("fX",&tempfX);
@@ -45,9 +45,9 @@ void plot(const char* FileName = "", int ev = 1){
 
 
 	TTree *T1 = (TTree*)input_f->Get("Hits");
-	T1->Draw("fX:fY>>Detected","fEvent==1","");
-  T1->Draw("fX>>Detectedx","fEvent==1","");
-	T1->Draw("fY>>Detectedy","fEvent==1","");
+	T1->Draw("fX:fY>>Detected",Form("fEvent==%i",ev),"");
+  T1->Draw("fX>>Detectedx",Form("fEvent==%i",ev),"");
+	T1->Draw("fY>>Detectedy",Form("fEvent==%i",ev),"");
 
 	T1->SetBranchAddress("fEvent",&tempfEvent);
 	T1->SetBranchAddress("fX",&tempfX);
@@ -103,10 +103,13 @@ void plot(const char* FileName = "", int ev = 1){
 	DetectedBin->ResetStats();
 	TH1D * HitX = DetectedBin->ProjectionX();
   TH1D * HitY = DetectedBin->ProjectionY();
-	TF1 *f1 = new TF1("f1","gaus",0,32);
-	f1->SetParLimits(1,0,32);
-	HitX-> Fit("f1");
-	HitY-> Fit("f1");
+	TF1 *fx = new TF1("fx","gaus",-1.155,1.155);
+	fx->SetParLimits(1,-1.155,1.155);
+	TF1 *fy = new TF1("fy","gaus",-1.155,1.155);
+	fy->SetParLimits(1,-1.254,1.254);
+
+	HitX-> Fit("fx","L");
+	HitY-> Fit("fy","L");
 
 
   output_f->cd();

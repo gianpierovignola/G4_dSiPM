@@ -53,6 +53,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
     G4VPhysicalVolume *physVol = touchable->GetVolume();
     G4ThreeVector posDetector = physVol->GetTranslation();
+    G4int hitted_pix = copyNo;
 
     #ifndef G4MULTITHREADED
         //G4cout << "Detector position: " << posDetector << G4endl;
@@ -76,6 +77,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
         man->FillNtupleDColumn(1, 1, posDetector[0]);
         man->FillNtupleDColumn(1, 2, posDetector[1]);
         man->FillNtupleDColumn(1, 3, posDetector[2]);
+        man->FillNtupleDColumn(1, 4, hitted_pix);
         man->AddNtupleRow(1);
     }
 

@@ -26,13 +26,17 @@ MyRunAction::MyRunAction()
     man->CreateNtupleDColumn("fX");
     man->CreateNtupleDColumn("fY");
     man->CreateNtupleDColumn("fZ");
-    //man->CreateNtupleDColumn("xGun");
-    //man->CreateNtupleDColumn("yGun");
+    man->CreateNtupleDColumn("Hitted_pix");
     man->FinishNtuple(1);
 
     man->CreateNtuple("Scoring", "Scoring");
     man->CreateNtupleDColumn("fEdep");
     man->FinishNtuple(2);
+
+    man->CreateNtuple("Gun", "Gun");
+    man->CreateNtupleDColumn("xGun");
+    man->CreateNtupleDColumn("yGun");
+    man->FinishNtuple(3);
 }
 
 MyRunAction::~MyRunAction()

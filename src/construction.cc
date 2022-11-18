@@ -374,12 +374,14 @@ MyDetectorConstruction::~MyDetectorConstruction()
     logicDetector->SetVisAttributes(brownVisAttributes);
     G4int i1 = 1;
     G4int j1 = 1;
+    G4int PixID = 0;
     for(G4int i = 1; i <= nx; i++)
     {
       for(G4int j = 1; j <= ny; j++)
       {
-        physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, j+i*nx, true);
+        physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, PixID, true);
         j1+=2;
+        PixID++;
       }
       i1+=2;
       j1=1;
