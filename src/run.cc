@@ -26,17 +26,16 @@ MyRunAction::MyRunAction()
     man->CreateNtupleDColumn("fX");
     man->CreateNtupleDColumn("fY");
     man->CreateNtupleDColumn("fZ");
-    man->CreateNtupleDColumn("Hitted_pix");
+    man->CreateNtupleIColumn("Hpix");
     man->FinishNtuple(1);
 
     man->CreateNtuple("Scoring", "Scoring");
+    man->CreateNtupleIColumn("fEvent");
     man->CreateNtupleDColumn("fEdep");
-    man->FinishNtuple(2);
-
-    man->CreateNtuple("Gun", "Gun");
     man->CreateNtupleDColumn("xGun");
     man->CreateNtupleDColumn("yGun");
-    man->FinishNtuple(3);
+    man->FinishNtuple(2);
+
 }
 
 MyRunAction::~MyRunAction()
@@ -51,7 +50,8 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
     std::stringstream strRunID;
     strRunID << runID;
 
-    man->OpenFile(fname+"_"+fxpos+"_"+fypos+".root");
+    //man->OpenFile(fname+"_"+fxpos+"_"+fypos+".root");
+    man->OpenFile("Output.root");
 
 }
 

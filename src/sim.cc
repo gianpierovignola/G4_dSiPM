@@ -14,13 +14,13 @@
 int main(int argc, char** argv)
 {
     G4UIExecutive* ui = 0;
-    
+
     #ifdef G4MULTITHREADED
       G4MTRunManager* runManager = new G4MTRunManager;
     #else
       G4RunManager* runManager = new G4RunManager;
     #endif
-    
+
     runManager->SetUserInitialization(new MyDetectorConstruction());
     runManager->SetUserInitialization(new MyPhysicsList());
     runManager->SetUserInitialization(new MyActionInitialization());
@@ -29,12 +29,12 @@ int main(int argc, char** argv)
     {
         ui = new G4UIExecutive(argc, argv);
     }
-    
+
     G4VisManager *visManager = new G4VisExecutive();
     visManager->Initialize();
-    
+
     G4UImanager *UImanager = G4UImanager::GetUIpointer();
-    
+
     if(ui)
     {
         UImanager->ApplyCommand("/control/execute vis.mac");

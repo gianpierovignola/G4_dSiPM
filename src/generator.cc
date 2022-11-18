@@ -7,13 +7,6 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName="e-";
     G4ParticleDefinition *particle = particleTable->FindParticle("e-");
-    std::cout<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<G4UniformRand()<<G4UniformRand()<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<std::endl;
 
     G4ThreeVector pos(0.,0.,0.);
 
@@ -41,11 +34,4 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     G4ThreeVector temppos(tempX*mm,tempY*mm,0.);
     fParticleGun->SetParticlePosition(temppos);
     fParticleGun->GeneratePrimaryVertex(anEvent);
-
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
-    man->FillNtupleDColumn(3, 0, tempX);
-    man->FillNtupleDColumn(3, 1, tempY);
-    man->AddNtupleRow(3);
-
-
 }
