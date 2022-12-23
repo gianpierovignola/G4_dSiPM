@@ -19,7 +19,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   ygap = 0;
   xpitch = 70;
   ypitch = 76;
-  radthick = 500;
+  radthick = 100;
   DUTthick = 300;
 
   //per Silicone
