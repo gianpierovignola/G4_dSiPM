@@ -12,6 +12,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   fMessenger->DeclareProperty("ypitch", ypitch, "ypitch um");
   fMessenger->DeclareProperty("radthick", radthick, "radthick um");
   fMessenger->DeclareProperty("DUTthick", DUTthick, "DUTthick um");
+  fMessenger->DeclareProperty("Gluethick", Gluethick, "Gluethick um");
 
   nx = 32;
   ny = 32;
@@ -19,8 +20,9 @@ MyDetectorConstruction::MyDetectorConstruction()
   ygap = 0;
   xpitch = 70;
   ypitch = 76;
-  radthick = 100;
+  radthick = 200;
   DUTthick = 300;
+  Gluethick = 20;
 
   //per Silicone
   nistMan = G4NistManager::Instance();
@@ -277,15 +279,15 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
 
 
-    //Epoxy common
+    //Epoxy general
     const G4int nEntries_EpoxyResin = 2;
     G4double PhotonEnergyEpoxyResin[nEntries_EpoxyResin] = {1.239841939*eV/0.2, 1.239841939*eV/0.9};
-    G4double RefractiveIndexEpoxyResin[nEntries_EpoxyResin] = {1.53, 1.53};
+    G4double RefractiveIndexEpoxyResin[nEntries_EpoxyResin] = {1.5338, 1.5338};
     G4MaterialPropertiesTable* MPTEpoxyResin = new G4MaterialPropertiesTable();
     MPTEpoxyResin->AddProperty("RINDEX",PhotonEnergyEpoxyResin,RefractiveIndexEpoxyResin,nEntries_EpoxyResin);
 
-    //Epoxy0
-    Epoxy0 = new G4Material (" Epoxy ", 2*g/cm3 , 4);
+    //Epoxy 601-LV
+    Epoxy0 = new G4Material (" Epoxy ", 1.15*g/cm3 , 4);
     Epoxy0 -> AddElement ( C , 12);
     Epoxy0 -> AddElement ( H , 14);
     Epoxy0 -> AddElement ( O , 2);
@@ -351,7 +353,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     G4double xWorld = (xpitch*nx+xgap*(nx+1))*0.5*um;
     G4double yWorld = (ypitch*ny+ygap*(ny+1))*0.5*um;
     std::cout<<std::endl<<std::endl<<std::endl<<"x "<<xWorld<<" y "<<yWorld<<std::endl<<std::endl<<std::endl;
-    G4double zWorld = (2*radthick+DUTthick)*um;
+    G4double zWorld = (2*radthick+DUTthick+Gluethick)*um;
     solidWorld = new G4Box("solidWorld", xWorld, yWorld, zWorld);
     logicWorld = new G4LogicalVolume(solidWorld, Air, "logicWorld");
     physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0, true);
@@ -364,7 +366,17 @@ MyDetectorConstruction::~MyDetectorConstruction()
     logicRadiator->SetVisAttributes(blueVisAttributes);
     skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface);
     fScoringVolume = logicRadiator;
-    physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., radthick*1.5*um), logicRadiator, "physRadiator", logicWorld, false, 0, true);
+    physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., (radthick*1.5)*um), logicRadiator, "physRadiator", logicWorld, false, 0, true);
+
+    //Construct Glue
+    solidGlue = new G4Box("solidRadiator", xWorld, yWorld, Gluethick*0.5*um);
+    logicGlue = new G4LogicalVolume(solidGlue, Epoxy0, "logicalGlue");
+    G4Colour red(1., 0., 0.);
+    G4VisAttributes* redVisAttributes = new G4VisAttributes(red);
+    logicGlue->SetVisAttributes(redVisAttributes);
+    skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface);
+    //fScoringVolume = logicGlue;
+    physGlue = new G4PVPlacement(0, G4ThreeVector(0., 0., ((2*radthick)+Gluethick*0.5)*um), logicGlue, "physGlue", logicWorld, false, 0, true);
 
     //Contruct Detector
     solidDetector = new G4Box("solidDetector", xpitch*0.5*um, ypitch*0.5*um, DUTthick*0.5*um);
@@ -379,7 +391,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     {
       for(G4int j = 1; j <= ny; j++)
       {
-        physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, PixID, true);
+        physDetector = new G4PVPlacement(0, G4ThreeVector((i1*xpitch*0.5)*um + xgap*i*um - (xpitch*nx+xgap*(nx+1))*0.5*um, (j1*ypitch*0.5)*um + ygap*j*um - (ypitch*ny+ygap*(ny+1))*0.5*um , (2*radthick+Gluethick+DUTthick*0.5)*um), logicDetector, "physDetector", logicWorld, false, PixID, true);
         j1+=2;
         PixID++;
       }
