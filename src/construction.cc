@@ -139,6 +139,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
     //LYSO
     LYSO = new G4Material ("LYSO", 7.1 * g / cm3, 3, kStateSolid);
     LYSO->AddElement (Lu, 2);
+    LYSO->AddElement (Y, 1);    
     LYSO->AddElement (Si, 1);
     LYSO->AddElement (O, 5);
 
